@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人简历</title>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #2563eb, #1d4ed8);
+            --primary-color: #2563eb;
+            --text-main: #0f172a;
+            --text-sub: #475569;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --tag-bg: #eff6ff;
+            --tag-text: #1e40af;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --radius-md: 12px;
+            --radius-sm: 6px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            color: var(--text-main);
+            background-color: var(--bg-color);
+            line-height: 1.7;
+            padding: 90px 20px 40px; 
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* 固定悬浮顶部工具栏 */
+        .sticky-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .toolbar {
+            display: flex;
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: 30px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-sub);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+        }
+
+        .btn.active {
+            background: var(--card-bg);
+            color: var(--primary-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* 容器主面板 */
+        .container {
+            max-width: 840px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 45px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* 头部样式 */
+        header {
+            text-align: center;
+            padding-bottom: 30px;
+            margin-bottom: 35px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        header h1 {
+            font-size: 34px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+
+        .info-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px 24px;
+            font-size: 14px;
+            color: var(--text-sub);
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* 通用区块排版 */
+        section {
+            margin-bottom: 40px;
+        }
+
+        section h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        section h2::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 18px;
+            background: var(--primary-gradient);
+            border-radius: 4px;
+        }
+
+        /* 技能组视觉卡片化 */
+        .skills-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .skill-card {
+            background: #f8fafc;
+            border: 1px solid #f1f5f9;
+            padding: 16px 20px;
+            border-radius: var(--radius-md);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .skill-card strong {
+            color: var(--primary-color);
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .skill-card p {
+            font-size: 14px;
+            color: var(--text-sub);
+            line-height: 1.6;
+        }
+
+        /* 纵向履历/项目组件 */
+        .timeline-wrapper {
+            position: relative;
+            padding-left: 20px;
+            border-left: 2px solid #e2e8f0;
+            margin-left: 8px;
+        }
+
+        .timeline-card {
+            position: relative;
+            margin-bottom: 32px;
+        }
+
+        .timeline-card:last-child {
+            margin-bottom: 10px;
+        }
+
+        .timeline-card::before {
+            content: '';
+            position: absolute;
+            left: -27px;
+            top: 6px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 2px solid var(--primary-color);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .date-badge {
+            font-size: 13px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        /* 极简标签束 */
+        .tag-pool {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 8px 0 12px 0;
+        }
+
+        .tag-item {
+            background: var(--tag-bg);
+            color: var(--tag-text);
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        /* 优雅符号化列表 */
+        ul.custom-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        ul.custom-list li {
+            font-size: 14.5px;
+            color: #334155;
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 14px;
+        }
+
+        ul.custom-list li::before {
+            content: "•";
+            color: var(--primary-color);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        ul.custom-list li strong {
+            color: var(--text-main);
+        }
+
+        /* 视图切换核心驱动机制 */
+        [data-view] {
+            display: none;
+            animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body.view-tech [data-view="tech"] { display: block; }
+        body.view-edu [data-view="edu"] { display: block; }
+        
+        /* 教培视角全局换色方案 */
+        body.view-edu {
+            --primary-gradient: linear-gradient(135deg, #10b981, #059669);
+            --primary-color: #10b981;
+            --tag-bg: #ecfdf5;
+            --tag-text: #047857;
+            --bg-color: #f0fdf4;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 深度响应式与手机端排版重塑 */
+        @media (max-width: 640px) {
+            body { padding: 84px 12px 24px; }
+            .container { padding: 24px 16px; border-radius: var(--radius-sm); }
+            header { padding-bottom: 20px; margin-bottom: 24px; }
+            header h1 { font-size: 26px; }
+            .info-grid { gap: 8px 16px; justify-content: flex-start; }
+            .info-item { font-size: 13px; }
+            section { margin-bottom: 30px; }
+            section h2 { font-size: 18px; margin-bottom: 14px; }
+            .skill-card { padding: 14px 16px; }
+            .card-header { flex-direction: column; gap: 2px; }
+            .date-badge { font-size: 12px; margin-bottom: 4px; }
+            ul.custom-list li { font-size: 13.5px; }
+        }
+
+        /* 针对小屏幕手机的细微缩放微调 */
+        @media (max-width: 380px) {
+            .toolbar { max-width: 100%; }
+            .btn { font-size: 13px; padding: 6px 10px; }
+            header h1 { font-size: 24px; }
+        }
+
+        /* 优雅打印适配 */
+        @media print {
+            body { background: white; padding: 0; }
+            .sticky-navbar { display: none; }
+            .container { box-shadow: none; padding: 0; }
+        }
+    </style>
+</head>
+<body class="view-tech">
+
+    <!-- 顶部悬浮切换栏 -->
+    <div class="sticky-navbar">
+        <div class="toolbar">
+            <button class="btn active" data-target="tech">💻 研发技术岗</button>
+            <button class="btn" data-target="edu">🍎 教育培训岗</button>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- 基础信息面板 -->
+        <header>
+            <h1>熊黛宇个人简历</h1>
+            <div class="info-grid">
+                <div class="info-item">毕业院校：山东大学</div>
+                <div class="info-item">专业：数字媒体技术 (本科)</div>
+                <div class="info-item">2023年毕业</div>
+                <div class="info-item">手机号：18586389674</div>
+                <div class="info-item">邮箱：672390287@qq.com</div>
+            </div>
+        </header>
+
+        <!-- 自我评价 -->
+        <section>
+            <h2>自我评价</h2>
+            <ul class="custom-list">
+                <li><strong>技术与教育背景</strong>：数字媒体技术专业背景，结合了计算机开发基础（Web全栈 / Unity游戏开发）与初中物理教学、个性化辅导的实践经验。</li>
+                <li><strong>具备美术基础</strong>：接受过完整的美术培训，具有良好的色彩、构图能力及视觉审美，便于在数字化视觉交互研发中进行跨部门沟通与协同。</li>
+                <li><strong>工作态度与表达能力</strong>：拥有一年的自由职业项目交付经验与一年的一线物理教学经历。在开展技术研发的同时，具备良好的逻辑表达、课堂管理及客户沟通能力。</li>
+                <li><strong>游戏与动漫热忱</strong>：热爱游戏和动漫，游玩过多种品类的游戏，对主流数字娱乐产品的核心机制、美术风格和核心受众心理有较深的感知与理解。</li>
+            </ul>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 模块一：💻 研发技术岗专属视图 -->
+        <!-- ========================================== -->
+        <div data-view="tech">
+            <section>
+                <h2>核心技能基本盘</h2>
+                <div class="skills-container">
+                    <div class="skill-card">
+                        <strong>Web 研发 / 全栈开发</strong>
+                        <p>熟悉 Vue2 工程框架与 Flask 微服务后端，具备从登录鉴权、数据库设计至响应式前端的全栈独立交付能力。</p>
+                    </div>
+                    <div class="skill-card">
+                        <strong>游戏研发 / Unity & C#</strong>
+                        <p>熟练掌握C#代码开发，熟悉动作系统开发、对象池性能优化以及 FSM 有限状态机设计等模块设计，具备MVC模式开发经验的解耦原则。</p>
+                    </div>
+                    <div class="skill-card">
+                        <strong>技术美术 / Shader 特效</strong>
+                        <p>结合自身美术基础，能够通过 Shader Graph 编写定制化着色器。在二次元卡通渲染、模型描边、溶解消融、物体外发光及玻璃材质表现上有开发经验。</p>
+                    </div>
+                    <div class="skill-card">
+                        <strong>基础设施 / 脚本工程</strong>
+                        <p>掌握使用 Python 编写自动化数据处理脚本的方法；熟练使用 Git 进行代码版本控制；具备 Linux 环境组网及本地 Linux 系统调优运维经验。</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>行业履历</h2>
+                <div class="timeline-wrapper">
+                    <div class="timeline-card">
+                        <div class="card-header">
+                            <span class="card-title">独立开发者 / 自由职业 (Web & Game Freelancer)</span>
+                            <span class="date-badge">2025.06 - 至今</span>
+                        </div>
+                        <ul class="custom-list">
+                            <li>承接 Web 全栈应用定制、Unity 客户端研发以及 Shader 特效美术外包工作，负责从需求分析到工程部署的完整流程。</li>
+                            <li>独立研发并完成私有云部署《个人智能媒体管理系统》，解决了本地散落多媒体资产的组织与管理问题。</li>
+                        </ul>
+                    </div>
+                    <div class="timeline-card">
+                        <div class="card-header">
+                            <span class="card-title">初中物理家教 | 个性化辅导</span>
+                            <span class="date-badge">2025.06 - 至今</span>
+                        </div>
+                        <ul class="custom-list">
+                            <li>利用业余时间提供初中物理家教辅导，根据学生实际学情制定复习与训练方案，注重与学生及家长的日常沟通。</li>
+                        </ul>
+                    </div>
+                    <div class="timeline-card">
+                        <div class="card-header">
+                            <span class="card-title">重庆思创 | 初中物理教师</span>
+                            <span class="date-badge">2024.09 - 2025.06</span>
+                        </div>
+                        <ul class="custom-list">
+                            <li>负责初中物理体系授课，通过一线教学实践，锻炼了自身的表达沟通、教学组织以及高压力下的统筹协作能力。</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>个人开发项目</h2>
+                <div class="timeline-wrapper">
+                    <div class="timeline-card">
+                        <div class="card-header">
+                            <span class="card-title">1. 3D 休闲叠方块小游戏</span>
+                            <span class="date-badge">独立研发（完整交付）</span>
+                        </div>
+                        <div class="tag-pool">
+                            <span class="tag-item">Unity3D</span><span class="tag-item">C#</span><span class="tag-item">网格动态裁剪</span><span class="tag-item">对象池优化</span>
+                        </div>
+                        <ul class="custom-list">
+                            <li><strong>动态网格切割算法</strong>：利用 C# 实现了实时网格裁剪机制，在移动方块下落时，通过计算边界重叠区域，动态生成留存方块与掉落碎片的 Mesh 网格，保证视觉表现连贯。</li>
+                            <li><strong>物理判定与性能调优</strong>：基于质心偏移理论编写了物体的下落物理判定；针对方块、裁剪碎片及粒子特效的频繁生成，接入对象池（Object Pool）进行内存复用，减少运行时垃圾回收（GC Alloc）频率，提升运行流畅度。</li>
+                            <li><strong>视听反馈系统</strong>：实现了多阶梯音调递增（Perfect 连击音效）机制并匹配实时粒子特效，提升了游戏的交互反馈体验。</li>
+                        </ul>
+                    </div>
+
+                    <div class="timeline-card">
+                        <div class="card-header">
+                            <span class="card-title">2. 个人智能媒体管理系统（MediaStation）</span>
+                            <span class="date-badge">全栈独立开发</span>
+                        </div>
+                        <div class="tag-pool">
+                            <span class="tag-item">Vue2</span><span class="tag-item">Flask</span><span class="tag-item">Python过滤核心</span><span class="tag-item">Linux部署</span>
+                        </div>
+                        <ul class="custom-list">
+                            <li><strong>前后端全链路打通</strong>：基于 Flask 后端整合 Vue2 视图流，对接 Linux 底层存储，完成了动态多媒体封面、悬停免流预播放等交互开发。</li>
+                            <li><strong>复合逻辑检索器</strong>：设计了支持布尔算子（AND / OR / NOT）的多维过滤器，通过 Python 过滤模块与后端关系型检索相结合的机制，满足海量媒体元数据的检索需求。</li>
+                        </ul>
+                    </div>
+
+                    <div class="timeline-card">
+                        <div class="card-header">
+                            <span class="card-title">3. Unity 2D 动作与 Roguelike 复合游戏原型</span>
+                            <span class="date-badge">独立研发 / TA</span>
+                        </div>
+                        <div class="tag-pool">
+                            <span class="tag-item">Unity3D</span><span class="tag-item">C#</span><span class="tag-item">Shader Graph</span><span class="tag-item">FSM状态机</span>
+                        </div>
+                        <ul class="custom-list">
+                            <li><strong>动作与 AI 核心状态机</strong>：基于面向对象思想自研有限状态机（FSM），将玩家动作连招、受击硬直以及怪物决策逻辑进行封装，降低底层耦合度，提高系统健壮性。</li>
+                            <li><strong>技美渲染特效层</strong>：不依赖第三方插件，使用 Shader Graph 实现了卡通渲染、边缘高光、平滑溶解、外发光以及玻璃透明介质等多种材质特效。</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 模块二：🍎 互动教培岗专属视图 -->
+        <!-- ========================================== -->
+        <div data-view="edu">
+            <section>
+                <h2>教学核心教研能力</h2>
+                <div class="skills-container">
+                    <div class="skill-card">
+                        <strong>全周期全体系课程打通</strong>
+                        <p>熟悉义务教育物理课程大纲，拥有一套系统、清晰的授课方法论，能够承担从基础衔接到中考复习的完整周期教学。</p>
+                    </div>
+                    <div class="skill-card">
+                        <strong>标准化教研与精准命题闭环</strong>
+                        <p>具备教学研发能力。能够基于标准考核指标，自主命题编写考点分布合理、梯度分明的测验试卷，通过错题数据辅助学生查漏补缺。</p>
+                    </div>
+                    <div class="skill-card">
+                        <strong>数字媒体与编程教育</strong>
+                        <p>依托数字媒体技术背景与系统美术培训经历，除物理学科授课外，亦能承担平面美学创客、Python 自动化、网页设计、Unity3D 图形化/代码游戏开发等跨学科教学任务。</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>教学与教研履历</h2>
+                <div class="timeline-wrapper">
+                    <div class="timeline-card">
+                        <div class="card-header">
+                            <span class="card-title">初中物理家教 | 个性化提分辅导</span>
+                            <span class="date-badge">2025.06 - 至今</span>
+                        </div>
+                        <ul class="custom-list">
+                            <li><strong>个性化教学设计</strong>：面向中考及日常辅导需求，独立为多名不同学力基础的初中生提供定制化的一对一物理课辅导。</li>
+                            <li><strong>盲区排查与难点突破</strong>：深入分析学生的错题数据，将抽象的力学、电学模块转化为具体、可理解的物理模型，帮助多名学生在短期内攻克重难点。</li>
+                            <li><strong>教学反馈与日常沟通</strong>：建立定期的阶段性学情反馈机制，与家长、学生保持有效沟通，辅导成效获得家长认可。</li>
+                        </ul>
+                    </div>
+                    <div class="timeline-card">
+                        <div class="card-header">
+                            <span class="card-title">重庆思创 | 初中物理教师</span>
+                            <span class="date-badge">2024.09 - 2025.06</span>
+                        </div>
+                        <ul class="custom-list">
+                            <li><strong>一线教学实践</strong>：完整负责六个平行班级的物理教学，对初中物理核心考点及易错点进行系统归纳，以及对家长课后反馈、学生课后答疑，教学反馈良好。</li>
+                            <li><strong>教辅讲义编写</strong>：参与校本物理辅导教材的编纂与校正。发挥视觉设计基础，自主开发了一套逻辑清晰、视听合理的动态多媒体课件库，提高课堂互动效果。</li>
+                            <li><strong>命题与学情跟踪</strong>：承担阶段性单元及期中试卷命题任务，确保题目考点覆盖率与难度匹配度，并通过学情跟踪建立错题档案，形成教学闭环。</li>
+                            <li><strong>招生讲座组织</strong>：负责面向意向家长及学生群体开展学科专题讲座。以学情大数据为切入点，剖析考纲变化与重难点分布，提供务实的备考路径规划。</li>
+                            <li><strong>学生诊断答疑</strong>：建立标准化诊断闭环，通过定向测试题及日常错题档案对学生进行学力盲区排查，提供有针对性的1对1答疑反馈与个性化提升建议，有效增进家长对教学专业度的信任。</li>
+                        </ul>
+                    </div>
+                    <div class="timeline-card">
+                        <div class="card-header">
+                            <span class="card-title">自由职业 / 独立开发者 | 兼职科技创客导师</span>
+                            <span class="date-badge">2025.06 - 至今</span>
+                        </div>
+                        <ul class="custom-list">
+                            <li>保持对计算机开发技术的跟进；在自由职业期间，多次指导学员完成图形化编程、Python实用脚本及轻量级游戏原型的开发，具备科创项目的指导经验。</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>个人成果（教学教研与科技创新成果库）</h2>
+                <div class="timeline-wrapper">
+                    <!-- 1. 学生诊断与答疑成果 -->
+                    <div class="timeline-card">
+                        <div class="card-header">
+                            <span class="card-title">成果一：标准化学生学情诊断与个性化答疑方案</span>
+                        </div>
+                        <div class="tag-pool">
+                            <span class="tag-item">学力盲区排查</span><span class="tag-item">1对1精准答疑</span><span class="tag-item">学情诊断报告</span>
+                        </div>
+                        <ul class="custom-list">
+                            <li><strong>诊断闭环建立</strong>：设计并实施了针对初中物理核心模块的标准化诊断流程，通过定向测试题快速锁定学生的知识断层与认知卡点。</li>
+                            <li><strong>量化反馈与沟通</strong>：累计为多名不同基础的学生出具个性化学情诊断报告，提供务实的补弱方案与1对1答疑指导，以严谨的技术思维和务实态度建立家校信任。</li>
+                        </ul>
+                    </div>
+
+                    <!-- 2. 试卷与讲义教研成果 -->
+                    <div class="timeline-card">
+                        <div class="card-header">
+                            <span class="card-title">成果二：全体系学科讲义教研与精准命题库</span>
+                        </div>
+                        <div class="tag-pool">
+                            <span class="tag-item">讲义架构设计</span><span class="tag-item">考点梯度分布</span><span class="tag-item">自主校本命题</span>
+                        </div>
+                        <ul class="custom-list">
+                            <li><strong>多媒体讲义研发</strong>：发挥数字媒体专业与美术设计基础，独立研发并校正了一套排版逻辑清晰、视听反馈合理的物理动态多媒体课件与系统讲义库。</li>
+                            <li><strong>精准命题与测验</strong>：严格基于国家课程标准与中考大纲，独立编纂了多套考点覆盖率高、难度梯度分明的阶段性单元测试卷，通过错题数据辅助教学迭代。</li>
+                        </ul>
+                    </div>
+
+                    <!-- 3. 上课经历成果 -->
+                    <div class="timeline-card">
+                        <div class="card-header">
+                            <span class="card-title">成果三：一线的全班级与多模式授课经历</span>
+                        </div>
+                        <div class="tag-pool">
+                            <span class="tag-item">体制内平行班教学</span><span class="tag-item">大班课课堂管理</span><span class="tag-item">互动式宣讲讲座</span>
+                        </div>
+                        <ul class="custom-list">
+                            <li><strong>大班教学与课堂管理</strong>：完整负责六个平行班级的物理一线授课，具备良好的课堂控场、教学节奏把控与高压力下的教学组织统筹能力。</li>
+                            <li><strong>招生专题讲座宣讲</strong>：多次组织并主讲面向意向家长群体的学科专题讲座，以客观的学情数据剖析和务实的备考路径规划，实现了良好的互动与转化效果。</li>
+                        </ul>
+                    </div>
+
+                    <!-- 4. 游戏案例转化 -->
+                    <div class="timeline-card">
+                        <div class="card-header">
+                            <span class="card-title">成果四：3D 休闲叠方块小游戏</span>
+                        </div>
+                        <div class="tag-pool">
+                            <span class="tag-item">可转化为：物理碰撞与几何课</span><span class="tag-item">游戏对象池复用优化</span><span class="tag-item">跨平台交互逻辑</span>
+                        </div>
+                        <ul class="custom-list">
+                            <li><strong>对应教学输出</strong>：该案例适合引导高年级编程学生将数学几何与质心物理判定相结合，并通过对象池优化方案，向学员讲解计算机底层“用空间换时间”的资源管理思维。</li>
+                        </ul>
+                    </div>
+
+                    <!-- 5. Web系统案例转化 -->
+                    <div class="timeline-card">
+                        <div class="card-header">
+                            <span class="card-title">成果五：个人智能媒体管理系统</span>
+                        </div>
+                        <div class="tag-pool">
+                            <span class="tag-item">可转化为：Python 进阶逻辑课</span><span class="tag-item">网络数据通信（Flask）</span><span class="tag-item">布尔逻辑门应用</span>
+                        </div>
+                        <ul class="custom-list">
+                            <li><strong>对应教学输出</strong>：能够作为培养学生 Python 逻辑、理解互联网前后端通信机制以及运用 AND/OR/NOT 复合布尔检索进行信息分类的实战教学蓝本。</li>
+                        </ul>
+                    </div>
+
+                    <!-- 6. 动作游戏案例转化 -->
+                    <div class="timeline-card">
+                        <div class="card-header">
+                            <span class="card-title">成果六：Unity 2D 动作游戏与系统架构设计</span>
+                        </div>
+                        <div class="tag-pool">
+                            <span class="tag-item">可转化为：高级 C# 编程</span><span class="tag-item">算法状态机思维</span><span class="tag-item">数学与数字艺术特效</span>
+                        </div>
+                        <ul class="custom-list">
+                            <li><strong>对应教学输出</strong>：能够引导学生将有限状态机（FSM）等经典算法应用到动作游戏中。同时可结合自身的美术培训背景指导可视化 Shader 编写，激发学生对“科学与数字艺术交叉应用”的探究热情。</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </div>
+
+    <!-- 动态视图无缝滑移控制引擎 -->
+    <script>
+        const buttons = document.querySelectorAll('.btn[data-target]');
+        const body = document.body;
+
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                buttons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                const target = button.getAttribute('data-target');
+                body.className = target === 'tech' ? 'view-tech' : 'view-edu';
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>
