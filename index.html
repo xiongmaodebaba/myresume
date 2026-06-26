@@ -33,59 +33,24 @@
             color: var(--text-main);
             background-color: var(--bg-color);
             line-height: 1.7;
-            padding: 90px 20px 40px; 
+            padding: 40px 20px;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* 固定悬浮顶部工具栏 */
-        .sticky-navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 64px;
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-color);
-            z-index: 1000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 0 20px;
+        /* 顶部视图标签 */
+        .view-label {
+            text-align: center;
+            margin-bottom: 24px;
         }
-
-        .toolbar {
-            display: flex;
-            background: #f1f5f9;
-            padding: 4px;
-            border-radius: 30px;
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .btn {
-            flex: 1;
-            background: transparent;
-            border: none;
-            padding: 8px 16px;
+        .view-label span {
+            display: inline-block;
+            background: var(--primary-gradient);
+            color: #fff;
+            padding: 6px 20px;
             border-radius: 20px;
-            cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
-            color: var(--text-sub);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            white-space: nowrap;
-        }
-
-        .btn.active {
-            background: var(--card-bg);
-            color: var(--primary-color);
-            box-shadow: var(--shadow-sm);
+            letter-spacing: 0.5px;
         }
 
         /* 容器主面板 */
@@ -302,7 +267,7 @@
 
         /* 深度响应式与手机端排版重塑 */
         @media (max-width: 640px) {
-            body { padding: 84px 12px 24px; }
+            body { padding: 24px 12px; }
             .container { padding: 24px 16px; border-radius: var(--radius-sm); }
             header { padding-bottom: 20px; margin-bottom: 24px; }
             header h1 { font-size: 26px; }
@@ -318,27 +283,22 @@
 
         /* 针对小屏幕手机的细微缩放微调 */
         @media (max-width: 380px) {
-            .toolbar { max-width: 100%; }
-            .btn { font-size: 13px; padding: 6px 10px; }
             header h1 { font-size: 24px; }
         }
 
         /* 优雅打印适配 */
         @media print {
             body { background: white; padding: 0; }
-            .sticky-navbar { display: none; }
             .container { box-shadow: none; padding: 0; }
+            .view-label { display: none; }
         }
     </style>
 </head>
 <body class="view-tech">
 
-    <!-- 顶部悬浮切换栏 -->
-    <div class="sticky-navbar">
-        <div class="toolbar">
-            <button class="btn active" data-target="tech">💻 研发技术岗</button>
-            <button class="btn" data-target="edu">🍎 教育培训岗</button>
-        </div>
+    <!-- 顶部视图标签 -->
+    <div class="view-label">
+        <span class="label-text">💻 研发技术岗</span>
     </div>
 
     <div class="container">
@@ -590,7 +550,7 @@
                             <span class="tag-item">可转化为：物理碰撞与几何课</span><span class="tag-item">游戏对象池复用优化</span><span class="tag-item">跨平台交互逻辑</span>
                         </div>
                         <ul class="custom-list">
-                            <li><strong>对应教学输出</strong>：该案例适合引导高年级编程学生将数学几何与质心物理判定相结合，并通过对象池优化方案，向学员讲解计算机底层“用空间换时间”的资源管理思维。</li>
+                            <li><strong>对应教学输出</strong>：该案例适合引导高年级编程学生将数学几何与质心物理判定相结合，并通过对象池优化方案，向学员讲解计算机底层"用空间换时间"的资源管理思维。</li>
                         </ul>
                     </div>
 
@@ -616,7 +576,7 @@
                             <span class="tag-item">可转化为：高级 C# 编程</span><span class="tag-item">算法状态机思维</span><span class="tag-item">数学与数字艺术特效</span>
                         </div>
                         <ul class="custom-list">
-                            <li><strong>对应教学输出</strong>：能够引导学生将有限状态机（FSM）等经典算法应用到动作游戏中。同时可结合自身的美术培训背景指导可视化 Shader 编写，激发学生对“科学与数字艺术交叉应用”的探究热情。</li>
+                            <li><strong>对应教学输出</strong>：能够引导学生将有限状态机（FSM）等经典算法应用到动作游戏中。同时可结合自身的美术培训背景指导可视化 Shader 编写，激发学生对"科学与数字艺术交叉应用"的探究热情。</li>
                         </ul>
                     </div>
                 </div>
@@ -625,22 +585,24 @@
 
     </div>
 
-    <!-- 动态视图无缝滑移控制引擎 -->
+    <!-- 域名自动识别与视图切换引擎 -->
     <script>
-        const buttons = document.querySelectorAll('.btn[data-target]');
-        const body = document.body;
+        (function() {
+            const hostname = window.location.hostname;
+            const body = document.body;
+            const labelSpan = document.querySelector('.label-text');
 
-        buttons.forEach(button => {
-            button.addEventListener('click', () => {
-                buttons.forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-
-                const target = button.getAttribute('data-target');
-                body.className = target === 'tech' ? 'view-tech' : 'view-edu';
-                
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
-        });
+            if (hostname.startsWith('tea.')) {
+                body.className = 'view-edu';
+                if (labelSpan) labelSpan.textContent = '🍎 教育培训岗';
+            } else if (hostname.startsWith('app.')) {
+                body.className = 'view-tech';
+                if (labelSpan) labelSpan.textContent = '💻 研发技术岗';
+            } else {
+                body.className = 'view-tech';
+                if (labelSpan) labelSpan.textContent = '💻 研发技术岗';
+            }
+        })();
     </script>
 </body>
 </html>
